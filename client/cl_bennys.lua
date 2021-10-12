@@ -82,7 +82,7 @@ Citizen.CreateThread(function()
         local inRange = false
 
         if isLoggedIn then
-            if PlayerJob.name == "mechanic" then
+            if PlayerJob.name == "bennys" then
                 local pos = GetEntityCoords(PlayerPedId())
                 local OnDutyDistance = #(pos - Config.Locations["duty"])
 
