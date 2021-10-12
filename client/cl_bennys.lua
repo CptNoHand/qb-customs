@@ -59,7 +59,7 @@ AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
     QBCore.Functions.GetPlayerData(function(PlayerData)
         PlayerJob = PlayerData.job
         if PlayerData.job.onduty then
-            if PlayerData.job.name == "mechanic" then
+            if PlayerData.job.name == "bennys" then
                 TriggerServerEvent("QBCore:ToggleDuty")
             end
         end
