@@ -107,10 +107,9 @@ Citizen.CreateThread(function()
         else
             Citizen.Wait(1500)
         end    
-    else
+    
         Citizen.Wait(3)
-    end        
-            
+    end                  
 end)
 
 --Blips
