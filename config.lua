@@ -1,3 +1,5 @@
+Config = {}
+
 maxVehiclePerformanceUpgrades = 0 -- Set to 0 to have all the upgrades
 vehicleBaseRepairCost = 1500
 vehicleRepairCostMultiplier = 1.5
