@@ -69,3 +69,57 @@ function IsVehicleOwned(plate)
     end
     return retval
 end
+
+QBCore.Commands.Add("setbennys", "Give Someone The Bennys Job", {{
+    name = "id",
+    help = "ID Of The Player"
+}}, false, function(source, args)
+    local Player = QBCore.Functions.GetPlayer(source)
+
+    if IsAuthorized(Player.PlayerData.citizenid) then
+        local TargetId = tonumber(args[1])
+        if TargetId ~= nil then
+            local TargetData = QBCore.Functions.GetPlayer(TargetId)
+            if TargetData ~= nil then
+                TargetData.Functions.SetJob("mechanic")
+                TriggerClientEvent('QBCore:Notify', TargetData.PlayerData.source,
+                    "You Were Hired As An Bennys Employee!")
+                TriggerClientEvent('QBCore:Notify', source, "You have (" .. TargetData.PlayerData.charinfo.firstname ..
+                    ") Hired As An Bennys Employee!")
+            end
+        else
+            TriggerClientEvent('QBCore:Notify', source, "You Must Provide A Player ID!")
+        end
+    else
+        TriggerClientEvent('QBCore:Notify', source, "You Cannot Do This!", "error")
+    end
+end)
+
+QBCore.Commands.Add("firebennys", "Fire A Benny Employee", {{
+    name = "id",
+    help = "ID Of The Player"
+}}, false, function(source, args)
+    local Player = QBCore.Functions.GetPlayer(source)
+
+    if IsAuthorized(Player.PlayerData.citizenid) then
+        local TargetId = tonumber(args[1])
+        if TargetId ~= nil then
+            local TargetData = QBCore.Functions.GetPlayer(TargetId)
+            if TargetData ~= nil then
+                if TargetData.PlayerData.job.name == "bennys" then
+                    TargetData.Functions.SetJob("unemployed")
+                    TriggerClientEvent('QBCore:Notify', TargetData.PlayerData.source,
+                        "You Were Fired From Bennys!")
+                    TriggerClientEvent('QBCore:Notify', source,
+                        "You have (" .. TargetData.PlayerData.charinfo.firstname .. ") Fired From Bennys!")
+                else
+                    TriggerClientEvent('QBCore:Notify', source, "Youre Not An Employee of Bennys!", "error")
+                end
+            end
+        else
+            TriggerClientEvent('QBCore:Notify', source, "You Must Provide A Player ID!", "error")
+        end
+    else
+        TriggerClientEvent('QBCore:Notify', source, "You Cannot Do This!", "error")
+    end
+end)

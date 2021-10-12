@@ -26,6 +26,92 @@ local originalPlateIndex = nil
 local attemptingPurchase = false
 local isPurchaseSuccessful = false
 local bennyLocation
+local isLoggedIn = true
+local PlayerJob = {}
+local onDuty = false
+
+function DrawText3Ds(x, y, z, text)
+	SetTextScale(0.35, 0.35)
+    SetTextFont(4)
+    SetTextProportional(1)
+    SetTextColour(255, 255, 255, 215)
+    SetTextEntry("STRING")
+    SetTextCentre(true)
+    AddTextComponentString(text)
+    SetDrawOrigin(x,y,z, 0)
+    DrawText(0.0, 0.0)
+    local factor = (string.len(text)) / 370
+    DrawRect(0.0, 0.0+0.0125, 0.017+ factor, 0.03, 0, 0, 0, 75)
+    ClearDrawOrigin()
+end
+
+Citizen.CreateThread(function()
+    while true do
+        if isLoggedIn then
+            SetClosestPlate()
+        end
+        Citizen.Wait(1000)
+    end
+end)
+
+RegisterNetEvent('QBCore:Client:OnPlayerLoaded')
+AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
+    QBCore.Functions.GetPlayerData(function(PlayerData)
+        PlayerJob = PlayerData.job
+        if PlayerData.job.onduty then
+            if PlayerData.job.name == "mechanic" then
+                TriggerServerEvent("QBCore:ToggleDuty")
+            end
+        end
+    end)
+end)
+
+RegisterNetEvent('QBCore:Client:OnJobUpdate')
+AddEventHandler('QBCore:Client:OnJobUpdate', function(JobInfo)
+    PlayerJob = JobInfo
+    onDuty = PlayerJob.onduty
+end)
+
+RegisterNetEvent('QBCore:Client:SetDuty')
+AddEventHandler('QBCore:Client:SetDuty', function(duty)
+    onDuty = duty
+end)
+
+Citizen.CreateThread(function()
+    while true do
+        local inRange = false
+
+        if isLoggedIn then
+            if PlayerJob.name == "mechanic" then
+                local pos = GetEntityCoords(PlayerPedId())
+                local OnDutyDistance = #(pos - Config.Locations["duty"])
+
+                if OnDutyDistance < 20 then
+                    inRange = true
+                    DrawMarker(2, Config.Locations["duty"].x, Config.Locations["duty"].y, Config.Locations["duty"].z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.3, 0.2, 210, 50, 9, 255, false, false, false, true, false, false, false)
+
+                    if OnDutyDistance < 1 then
+                        if onDuty then
+                            DrawText3Ds(Config.Locations["duty"].x, Config.Locations["duty"].y, Config.Locations["duty"].z, "[E] Off Duty")
+                        else
+                            DrawText3Ds(Config.Locations["duty"].x, Config.Locations["duty"].y, Config.Locations["duty"].z, "[E] On Duty")
+                        end
+                        if IsControlJustReleased(0, 38) then
+                            TriggerServerEvent("QBCore:ToggleDuty")
+                        end
+                    end
+                end
+            else
+                Citizen.Wait(1500)
+            end
+        else
+            Citizen.Wait(1500)
+        end    
+    else
+        Citizen.Wait(3)
+    end        
+            
+end)
 
 --Blips
 

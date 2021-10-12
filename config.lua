@@ -11,6 +11,10 @@ bennyGarages = {
     [2] = {coords = vector4(109.89, 6627.07, 31.78, 221.7938), useJob = true, job = {"bennys"}}
 }
 
+Config.Locations = {
+    ["duty"] = vector3(-205.85, -1327.62, 30.89),  
+}
+
 --[[ bennyLocations = {
     vector4(-211.55, -1324.55, 30.90, 319.731)
 } ]]
