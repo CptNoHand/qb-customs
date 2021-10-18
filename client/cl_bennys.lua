@@ -1,3 +1,5 @@
+local QBCore = exports['qb-core']:GetCoreObject()
+
 local isPlyInBennys = false
 local plyFirstJoin = false
 local nearDefault = false
@@ -815,8 +817,7 @@ function ExitBennys()
     isPlyInBennys = false
 end
 
-RegisterNetEvent('event:control:bennys')
-AddEventHandler('event:control:bennys', function(useID)
+RegisterNetEvent('event:control:bennys', function(useID)
     if IsPedInAnyVehicle(PlayerPedId(), false) then
         bennyHeading = bennyGarages[useID].coords.w
         if not isPlyInBennys then -- Bennys
@@ -915,11 +916,13 @@ Citizen.CreateThread(function()
                         if not isPlyInBennys then
                             Draw3DText(v.coords.x, v.coords.y, v.coords.z + 0.5, "[Press ~p~E~w~ - Enter Benny's Motorworks]", 255, 255, 255, 255, 4, 0.45, true, true, true, true, 0, 0, 0, 0, 55)
                             if IsControlJustReleased(1, 38) then
-                                if (v.useJob and isAuthorized((QBCore.Functions.GetPlayerData().job.name), k)) or not v.useJob then
-                                    TriggerEvent('event:control:bennys', k)
-                                else
-                                    QBCore.Functions.Notify("You are not authorized", "error")
-                                end
+				if GetPedInVehicleSeat(GetVehiclePedIsIn(PlayerPedId()), -1) == PlayerPedId() then
+					if (v.useJob and isAuthorized((QBCore.Functions.GetPlayerData().job.name), k)) or not v.useJob then
+					    TriggerEvent('event:control:bennys', k)
+					else
+					    QBCore.Functions.Notify("You are not authorized", "error")
+					end
+				end
                             end
                         else
                             disableControls()
@@ -936,15 +939,13 @@ Citizen.CreateThread(function()
 end)
 
 --#[Event Handlers]#--
-RegisterNetEvent("qb-customs:purchaseSuccessful")
-AddEventHandler("qb-customs:purchaseSuccessful", function()
+RegisterNetEvent("qb-customs:purchaseSuccessful", function()
     isPurchaseSuccessful = true
     attemptingPurchase = false
     QBCore.Functions.Notify("Purchase Successful")
 end)
 
-RegisterNetEvent("qb-customs:purchaseFailed")
-AddEventHandler("qb-customs:purchaseFailed", function()
+RegisterNetEvent("qb-customs:purchaseFailed", function()
     isPurchaseSuccessful = false
     attemptingPurchase = false
     QBCore.Functions.Notify("Not enough money", "error")
