@@ -109,6 +109,7 @@ end)
 
 Citizen.CreateThread(function()
     for k, v in pairs(bennyGarages) do
+        if v.blip then
         local blip = AddBlipForCoord(v.coords.x,v.coords.y,v.coords.z)
         SetBlipSprite(blip, 72)
         SetBlipScale(blip, 0.7)
@@ -116,6 +117,7 @@ Citizen.CreateThread(function()
         BeginTextCommandSetBlipName("STRING")
         AddTextComponentString("Benny's Motorworks")
         EndTextCommandSetBlipName(blip)
+        end
     end
 end)
 
