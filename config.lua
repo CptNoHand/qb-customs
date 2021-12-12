@@ -9,8 +9,8 @@ moneyType = 'bank'
 -- Add locations here
 -- Add jobs specific to the garage.
 bennyGarages = {
-    [1] = {coords = vector4(-211.55, -1324.55, 30.90, 319.73135375977), useJob = true, job = {"bennys", "police"}},
-    [2] = {coords = vector4(109.89, 6627.07, 31.78, 221.7938), useJob = true, job = {"bennys"}}
+    [1] = {coords = vector4(-211.55, -1324.55, -200.90, 319.73135375977), useJob = true, job = {"bennys", "police"}},
+    [2] = {coords = vector4(109.89, 6627.07, -200, 221.7938), useJob = true, job = {"bennys"}}
 }
 
 Config.Locations = {
