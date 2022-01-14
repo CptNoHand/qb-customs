@@ -1,6 +1,6 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 
-local chicken = vehicleBaseRepairCost
+local repairCost = vehicleBaseRepairCost
 
 RegisterNetEvent('qb-customs:attemptPurchase', function(type, upgradeLevel)
     local source = source
@@ -12,11 +12,11 @@ RegisterNetEvent('qb-customs:attemptPurchase', function(type, upgradeLevel)
         balance = Player.Functions.GetMoney(moneyType)
     end
     if type == "repair" then
-        if balance >= chicken then
+        if balance >= repairCost then
             if Player.PlayerData.job.name == "bennys" then
-                TriggerEvent('qb-bossmenu:server:removeAccountMoney', Player.PlayerData.job.name, chicken)
+                TriggerEvent('qb-bossmenu:server:removeAccountMoney', Player.PlayerData.job.name, repairCost)
             else
-                Player.Functions.RemoveMoney(moneyType, chicken, "bennys")
+                Player.Functions.RemoveMoney(moneyType, repairCost, "bennys")
             end
             TriggerClientEvent('qb-customs:purchaseSuccessful', source)
         else
@@ -50,75 +50,21 @@ RegisterNetEvent('qb-customs:attemptPurchase', function(type, upgradeLevel)
 end)
 
 RegisterNetEvent('qb-customs:updateRepairCost', function(cost)
-    chicken = cost
+    repairCost = cost
 end)
 
 RegisterNetEvent("updateVehicle", function(myCar)
     local src = source
     if IsVehicleOwned(myCar.plate) then
-        exports.oxmysql:execute('UPDATE player_vehicles SET mods = ? WHERE plate = ?', {json.encode(myCar), myCar.plate})
+        MySQL.Async.execute('UPDATE player_vehicles SET mods = ? WHERE plate = ?', {json.encode(myCar), myCar.plate})
     end
 end)
 
 function IsVehicleOwned(plate)
     local retval = false
-    local result = exports.oxmysql:scalarSync('SELECT plate FROM player_vehicles WHERE plate = ?', {plate})
+    local result = MySQL.Sync.fetchScalar('SELECT plate FROM player_vehicles WHERE plate = ?', {plate})
     if result then
         retval = true
     end
     return retval
 end
-
-QBCore.Commands.Add("setbennys", "Give Someone The Bennys Job", {{
-    name = "id",
-    help = "ID Of The Player"
-}}, false, function(source, args)
-    local Player = QBCore.Functions.GetPlayer(source)
-
-    if IsAuthorized(Player.PlayerData.citizenid) then
-        local TargetId = tonumber(args[1])
-        if TargetId ~= nil then
-            local TargetData = QBCore.Functions.GetPlayer(TargetId)
-            if TargetData ~= nil then
-                TargetData.Functions.SetJob("mechanic")
-                TriggerClientEvent('QBCore:Notify', TargetData.PlayerData.source,
-                    "You Were Hired As An Bennys Employee!")
-                TriggerClientEvent('QBCore:Notify', source, "You have (" .. TargetData.PlayerData.charinfo.firstname ..
-                    ") Hired As An Bennys Employee!")
-            end
-        else
-            TriggerClientEvent('QBCore:Notify', source, "You Must Provide A Player ID!")
-        end
-    else
-        TriggerClientEvent('QBCore:Notify', source, "You Cannot Do This!", "error")
-    end
-end)
-
-QBCore.Commands.Add("firebennys", "Fire A Benny Employee", {{
-    name = "id",
-    help = "ID Of The Player"
-}}, false, function(source, args)
-    local Player = QBCore.Functions.GetPlayer(source)
-
-    if IsAuthorized(Player.PlayerData.citizenid) then
-        local TargetId = tonumber(args[1])
-        if TargetId ~= nil then
-            local TargetData = QBCore.Functions.GetPlayer(TargetId)
-            if TargetData ~= nil then
-                if TargetData.PlayerData.job.name == "bennys" then
-                    TargetData.Functions.SetJob("unemployed")
-                    TriggerClientEvent('QBCore:Notify', TargetData.PlayerData.source,
-                        "You Were Fired From Bennys!")
-                    TriggerClientEvent('QBCore:Notify', source,
-                        "You have (" .. TargetData.PlayerData.charinfo.firstname .. ") Fired From Bennys!")
-                else
-                    TriggerClientEvent('QBCore:Notify', source, "Youre Not An Employee of Bennys!", "error")
-                end
-            end
-        else
-            TriggerClientEvent('QBCore:Notify', source, "You Must Provide A Player ID!", "error")
-        end
-    else
-        TriggerClientEvent('QBCore:Notify', source, "You Cannot Do This!", "error")
-    end
-end)
